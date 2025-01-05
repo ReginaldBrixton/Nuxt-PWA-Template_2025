@@ -17,8 +17,8 @@ const checkInstallation = computed(() => {
     
     <div class="features">
       <div class="feature-card">
-        <h3>Offline Support Here</h3>
-        <p>This app works even without internet connection</p>
+        <h3>Offline Support Here with Nuxt PWA</h3>
+        <p>This app works even without internet connection and can be installed on your device</p>
       </div>
       
       <div class="feature-card">
