@@ -1,9 +1,10 @@
 export default defineNuxtPlugin(() => {
   if (process.client) {
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault()
-      // You can store the event for later use if needed
-      window.deferredPrompt = e
+    const { isInstallable } = usePwa()
+
+    // Optional: Log PWA status
+    watch(isInstallable, (value) => {
+      console.log('PWA installable:', value)
     })
   }
 }) 
