@@ -2,6 +2,8 @@
 export default defineNuxtConfig({
   modules: ['@vite-pwa/nuxt'],
 
+  devtools: { enabled: true },
+
   app: {
     head: {
       title: 'My PWA App',
@@ -72,7 +74,8 @@ export default defineNuxtConfig({
       ]
     },
     client: {
-      installPrompt: true
+      installPrompt: true,
+      periodicSyncForUpdates: 3600
     },
     devOptions: {
       enabled: true,
