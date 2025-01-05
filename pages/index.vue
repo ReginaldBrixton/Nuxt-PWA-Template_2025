@@ -17,7 +17,7 @@ const checkInstallation = computed(() => {
     
     <div class="features">
       <div class="feature-card">
-        <h3>Offline Support</h3>
+        <h3>Offline Support Here</h3>
         <p>This app works even without internet connection</p>
       </div>
       
