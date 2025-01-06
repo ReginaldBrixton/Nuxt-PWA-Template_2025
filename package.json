@@ -10,12 +10,18 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxt/devtools": "^1.7.0",
+    "@nuxt/kit": "^3.15.1",
     "nuxt": "^3.15.1",
-    "vue": "latest",
-    "vue-router": "latest"
+    "vue": "^3.4.5",
+    "vue-router": "^4.2.5"
   },
-  "packageManager": "pnpm@9.15.2+sha512.93e57b0126f0df74ce6bff29680394c0ba54ec47246b9cf321f0121d8d9bb03f750a705f24edc3c1180853afd7c2c3b94196d0a3d53d3e069d9e2793ef11f321",
   "devDependencies": {
-    "@vite-pwa/nuxt": "^0.10.6"
-  }
+    "@nuxtjs/tailwindcss": "^6.12.2",
+    "@vite-pwa/nuxt": "^0.10.6",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17"
+  },
+  "packageManager": "pnpm@9.15.2"
 }
