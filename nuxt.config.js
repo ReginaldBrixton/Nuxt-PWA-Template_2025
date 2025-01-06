@@ -14,7 +14,7 @@ export default defineNuxtConfig({
         { name: 'description', content: 'My Progressive Web App' }
       ],
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: 'https://placehold.co/32x32.png' }
+        { rel: 'icon', type: 'image/x-icon', href: '@32x32.png' }
       ]
     }
   },
@@ -34,22 +34,22 @@ export default defineNuxtConfig({
       start_url: '/',
       icons: [
         {
-          src: 'https://placehold.co/64x64.png',
+          src: '@64x64.png',
           sizes: '64x64',
           type: 'image/png'
         },
         {
-          src: 'https://placehold.co/144x144.png',
+          src: '@144x144.png',
           sizes: '144x144',
           type: 'image/png'
         },
         {
-          src: 'https://placehold.co/192x192.png',
+          src: '@192x192.png',
           sizes: '192x192',
           type: 'image/png'
         },
         {
-          src: 'https://placehold.co/512x512.png',
+          src: '@512x512.png',
           sizes: '512x512',
           type: 'image/png',
           purpose: 'any maskable'
@@ -84,5 +84,9 @@ export default defineNuxtConfig({
     }
   },
 
-  compatibilityDate: '2025-01-05'
+  compatibilityDate: '2025-01-05',
+
+  css: [
+    '~/assets/css/main.css',
+  ],
 })
