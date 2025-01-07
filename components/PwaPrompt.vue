@@ -1,61 +1,38 @@
 <template>
   <ClientOnly>
-    <Teleport to="body">
-      <div v-if="forceShow" class="fixed bottom-5 right-5 bg-white p-5 rounded-lg shadow-lg z-[9999]">
-        <div class="space-y-4">
-          <p class="text-gray-700 font-medium">
-            Would you like to install this app?
-            <span class="text-sm text-gray-500 ml-2">({{ countdown }}s)</span>
-          </p>
-          <div class="flex gap-2">
-            <button 
-              @click="install"
-              class="px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 transition-colors duration-200"
-            >
-              Install
-            </button>
-            <button 
-              @click="close"
-              class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors duration-200"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-
-        <div v-if="$pwa?.needRefresh" class="mt-4 space-y-4 border-t pt-4">
-          <p class="text-gray-700">
-            New content available. Click reload to update.
-          </p>
-          <button 
-            @click="update"
-            class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200"
-          >
-            Reload
-          </button>
-        </div>
+    <div>
+      <!-- Persistent Install Button in Header/Navigation -->
+      <div v-if="isInstallable" class="fixed top-4 right-4 z-[9999]">
+        <button 
+          @click="install"
+          class="flex items-center px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 transition-colors duration-200"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          Install App
+        </button>
       </div>
-    </Teleport>
+
+      <!-- Update Notification -->
+      <div v-if="$pwa?.needRefresh" class="fixed bottom-4 left-4 bg-white p-4 rounded-lg shadow-lg z-[9999]">
+        <p class="text-gray-700 mb-2">
+          New content available!
+        </p>
+        <button 
+          @click="update"
+          class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200"
+        >
+          Update Now
+        </button>
+      </div>
+    </div>
   </ClientOnly>
 </template>
 
 <script setup>
 const { $pwa } = useNuxtApp()
 const { isInstallable, install: pwaInstall } = usePwa()
-
-const isVisible = ref(false)
-const countdown = ref(5)
-let timer = null
-
-const close = async () => {
-  if ($pwa?.cancelPrompt) {
-    await $pwa.cancelPrompt()
-  }
-  isVisible.value = false
-  if (timer) {
-    clearInterval(timer)
-  }
-}
 
 const update = async () => {
   try {
@@ -71,42 +48,10 @@ const update = async () => {
 const install = async () => {
   try {
     await pwaInstall()
-    isVisible.value = false
-    if (timer) {
-      clearInterval(timer)
-    }
   } catch (err) {
     console.error('Failed to install:', err) 
   }
 }
-
-const forceShow = computed(() => {
-  return isVisible.value && countdown.value > 0 && isInstallable.value
-})
-
-onMounted(() => {
-  if (process.client) {
-    // Start countdown when installable
-    watch(isInstallable, (newValue) => {
-      if (newValue) {
-        isVisible.value = true
-        timer = setInterval(() => {
-          countdown.value--
-          if (countdown.value <= 0) {
-            clearInterval(timer)
-            isVisible.value = false
-          }
-        }, 1000)
-      }
-    }, { immediate: true })
-  }
-})
-
-onBeforeUnmount(() => {
-  if (timer) {
-    clearInterval(timer)
-  }
-})
 </script>
 
 <style scoped>
