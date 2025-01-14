@@ -73,8 +73,9 @@ export default defineNuxtConfig({
     },
     workbox: {
       navigateFallback: '/',
+      globDirectory: '.nuxt/dist/client',
       globPatterns: [
-        '**/*.{js,css,html,png,svg,ico}',
+        '**/*.{js,css,html,png,svg,ico,json}'
       ],
       runtimeCaching: [
         {
@@ -92,7 +93,9 @@ export default defineNuxtConfig({
     },
     devOptions: {
       enabled: true,
-      type: 'module'
+      type: 'module',
+      suppressWarnings: true,
+      navigateFallback: '/'
     }
   },
 
