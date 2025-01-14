@@ -1,62 +1,108 @@
 <script setup>
 const { $pwa } = useNuxtApp()
 
-const title = ref('Welcome to My PWA')
-const message = ref('This is a sample page demonstrating PWA capabilities')
+const features = [
+  {
+    title: 'Offline Support',
+    description: 'Access your content anytime, anywhere - even without an internet connection!',
+    icon: 'M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z'
+  },
+  {
+    title: 'Easy Installation',
+    description: 'Install this app on your device for quick access and native-like experience',
+    icon: 'M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4'
+  },
+  {
+    title: 'Modern UI',
+    description: 'Beautiful and responsive design with dark mode support',
+    icon: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'
+  }
+]
 
-const checkInstallation = computed(() => {
-  return $pwa?.showInstallPrompt ? 'You can install this app!' : 'App is ready to use'
+const installStatus = computed(() => {
+  return $pwa?.showInstallPrompt ? 'Install Now' : 'Already Installed'
 })
+
+const handleInstall = () => {
+  if ($pwa?.showInstallPrompt) {
+    $pwa.install()
+  }
+}
 </script>
 
 <template>
   <div class="min-h-screen bg-gradient-to-b from-white to-gray-50">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-      <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-6 animate-fade-in">
-        {{ title }}
-      </h1>
-      <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">{{ message }}</p>
-      
-      <div class="inline-flex items-center px-4 py-2 rounded-full bg-emerald-50 text-emerald-700 mb-12">
-        <span class="mr-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-          </svg>
-        </span>
-        {{ checkInstallation }}
+    <main>
+      <div class="container mx-auto px-4 py-16">
+        <!-- Hero Section -->
+        <div class="relative pt-6 pb-16 sm:pb-24">
+          <div class="mt-16 mx-auto max-w-7xl px-4 sm:mt-24 sm:px-6">
+            <div class="text-center">
+              <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white sm:text-5xl md:text-6xl">
+                <span class="block">Welcome to</span>
+                <span class="block text-emerald-600 dark:text-emerald-500">Nuxt PWA Template</span>
+              </h1>
+              <p class="mt-3 max-w-md mx-auto text-base text-gray-500 dark:text-gray-400 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
+                A modern Progressive Web App template built with Nuxt 3, featuring offline support, easy installation, and a beautiful responsive design.
+              </p>
+              <div class="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
+                <div class="rounded-md shadow">
+                  <button
+                    @click="handleInstall"
+                    class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 md:py-4 md:text-lg md:px-10"
+                    :class="{ 'opacity-50 cursor-not-allowed': !$pwa?.showInstallPrompt }"
+                  >
+                    {{ installStatus }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="relative bg-gray-50 dark:bg-gray-800 py-16 sm:py-24">
+          <div class="mx-auto max-w-md px-4 text-center sm:max-w-3xl sm:px-6 lg:px-8 lg:max-w-7xl">
+            <h2 class="text-base font-semibold tracking-wider text-emerald-600 dark:text-emerald-500 uppercase">Features</h2>
+            <p class="mt-2 text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight sm:text-4xl">
+              Everything you need to get started
+            </p>
+            <div class="mt-12">
+              <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                <div
+                  v-for="feature in features"
+                  :key="feature.title"
+                  class="pt-6"
+                >
+                  <div class="flow-root bg-white dark:bg-gray-900 rounded-lg px-6 pb-8 h-full transform transition-all duration-200 hover:-translate-y-1 hover:shadow-xl">
+                    <div class="-mt-6">
+                      <div>
+                        <span class="inline-flex items-center justify-center p-3 bg-emerald-500 rounded-md shadow-lg">
+                          <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="feature.icon" />
+                          </svg>
+                        </span>
+                      </div>
+                      <h3 class="mt-8 text-lg font-medium text-gray-900 dark:text-white tracking-tight">{{ feature.title }}</h3>
+                      <p class="mt-5 text-base text-gray-500 dark:text-gray-400">
+                        {{ feature.description }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-        <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
-          <div class="text-emerald-500 mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
-            </svg>
-          </div>
-          <h3 class="text-xl font-bold text-gray-900 mb-3">Offline Support</h3>
-          <p class="text-gray-600">Access your content anytime, anywhere - even without an internet connection!</p>
-        </div>
-
-        <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
-          <div class="text-blue-500 mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-          </div>
-          <h3 class="text-xl font-bold text-gray-900 mb-3">One-Click Install</h3>
-          <p class="text-gray-600">Install instantly to your device for a native app-like experience</p>
-        </div>
-
-        <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
-          <div class="text-purple-500 mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-          </div>
-          <h3 class="text-xl font-bold text-gray-900 mb-3">Seamless Updates</h3>
-          <p class="text-gray-600">Always enjoy the latest features with automatic background updates</p>
-        </div>
-      </div>
-    </div>
+    </main>
   </div>
 </template>
+
+<style scoped>
+.transform {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+</style>

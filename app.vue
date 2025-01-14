@@ -1,7 +1,11 @@
 <template>
-  <div>
+  <NuxtLayout>
     <NuxtPwaAssets />
     <PwaPrompt />
     <NuxtPage />
-  </div>
+  </NuxtLayout>
 </template>
+
+<style scoped>
+/* Add your CSS styles here */
+</style>
