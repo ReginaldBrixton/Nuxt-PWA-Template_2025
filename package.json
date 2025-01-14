@@ -1,0 +1,30 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "clean-up": "node -e \"const { rmSync } = require('fs'); ['node_modules', '.nuxt', '.output', 'pnpm-lock.yaml'].forEach(dir => rmSync(dir, { recursive: true, force: true }))\"",
+    "dev": "nuxt cleanup && nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@nuxt/devtools": "^1.7.0",
+    "@vueuse/nuxt": "^12.3.0",
+    "nuxt": "^3.15.1",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@nuxtjs/tailwindcss": "^6.12.2",
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/typography": "^0.5.16",
+    "@types/node": "^22.10.5",
+    "@vite-pwa/nuxt": "^0.10.6",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17"
+  },
+  "packageManager": "pnpm@9.15.2"
+}
