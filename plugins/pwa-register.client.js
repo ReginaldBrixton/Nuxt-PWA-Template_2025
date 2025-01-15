@@ -4,22 +4,37 @@ export default defineNuxtPlugin(() => {
     return
   }
 
-  // Handle service worker updates
-  function handleServiceWorkerUpdate(registration) {
-    registration.addEventListener('updatefound', () => {
-      const newWorker = registration.installing
+  // Handle service worker updates with improved error handling
+  const handleServiceWorkerUpdate = (registration) => {
+    try {
+      registration.addEventListener('updatefound', () => {
+        const newWorker = registration.installing
 
-      newWorker?.addEventListener('statechange', () => {
-        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-          const updateConfirm = window.confirm(
-            'New content is available! Would you like to refresh to see the updates?'
-          )
-          if (updateConfirm) {
-            window.location.reload()
+        newWorker?.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            const updateConfirm = window.confirm(
+              'New content is available! Would you like to refresh to see the updates?'
+            )
+            if (updateConfirm) {
+              window.location.reload()
+            }
           }
-        }
+        })
       })
-    })
+    } catch (error) {
+      const errorInfo = {
+        name: error.name,
+        message: error.message,
+        fileName: error.fileName,
+        lineNumber: error.lineNumber
+      }
+
+      if (process.env.NODE_ENV === 'development') {
+        errorInfo.stack = error.stack
+      }
+
+      console.error('Error handling service worker update:', errorInfo)
+    }
   }
 
   // Register service worker when DOM is fully loaded
@@ -55,18 +70,18 @@ export default defineNuxtPlugin(() => {
         name: error.name,
         message: error.message,
         fileName: error.fileName,
-        lineNumber: error.lineNumber,
-        stack: error.stack
+        lineNumber: error.lineNumber
+      }
+
+      if (process.env.NODE_ENV === 'development') {
+        errorDetails.stack = error.stack
+        console.warn('PWA functionality will not be available - Service Worker failed to register')
       }
 
       console.error('ServiceWorker registration failed:', errorDetails)
 
       if (typeof window.reportError === 'function') {
         window.reportError('ServiceWorker registration failed', error)
-      }
-
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('PWA functionality will not be available - Service Worker failed to register')
       }
     }
   })
