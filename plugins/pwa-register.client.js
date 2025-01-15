@@ -5,7 +5,7 @@ export default defineNuxtPlugin(() => {
   }
 
   // Handle service worker updates
-  function handleServiceWorkerUpdate(registration) {
+  const handleServiceWorkerUpdate = (registration) => {
     registration.addEventListener('updatefound', () => {
       const newWorker = registration.installing
 
@@ -56,7 +56,9 @@ export default defineNuxtPlugin(() => {
         message: error.message,
         fileName: error.fileName,
         lineNumber: error.lineNumber,
-        stack: error.stack
+        ...(process.env.NODE_ENV === 'development' && {
+          stack: error.stack
+        })
       }
 
       console.error('ServiceWorker registration failed:', errorDetails)
