@@ -24,14 +24,11 @@ const installStatus = computed(() => {
 })
 
 const handleInstall = () => {
-  if ($pwa?.showInstallPrompt) {
-    $pwa.install()
-  }
+  $pwa?.showInstallPrompt && $pwa.install()
 }
 </script>
-
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-white to-gray-50">
+  <div class="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
     <main>
       <div class="container mx-auto px-4 py-16">
         <!-- Hero Section -->
@@ -49,7 +46,7 @@ const handleInstall = () => {
                 <div class="rounded-md shadow">
                   <button
                     @click="handleInstall"
-                    class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 md:py-4 md:text-lg md:px-10"
+                    class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 md:py-4 md:text-lg md:px-10"
                     :class="{ 'opacity-50 cursor-not-allowed': !$pwa?.showInstallPrompt }"
                   >
                     {{ installStatus }}
