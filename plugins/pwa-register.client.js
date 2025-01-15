@@ -1,6 +1,26 @@
 export default defineNuxtPlugin(() => {
   // Only run in client-side environment
-  if (!process.client) return
+  if (!process.client) {
+    return
+  }
+
+  // Handle service worker updates
+  function handleServiceWorkerUpdate(registration) {
+    registration.addEventListener('updatefound', () => {
+      const newWorker = registration.installing
+
+      newWorker?.addEventListener('statechange', () => {
+        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+          const updateConfirm = window.confirm(
+            'New content is available! Would you like to refresh to see the updates?'
+          )
+          if (updateConfirm) {
+            window.location.reload()
+          }
+        }
+      })
+    })
+  }
 
   // Register service worker when DOM is fully loaded
   window.addEventListener('load', async () => {
@@ -11,42 +31,43 @@ export default defineNuxtPlugin(() => {
     }
 
     try {
-      // Register the service worker
       const registration = await navigator.serviceWorker.register('/sw.js', {
         scope: '/',
         type: 'module'
       })
-          
-      // Handle updates
-      registration.addEventListener('updatefound', () => {
-        const newWorker = registration.installing
-        
-        newWorker?.addEventListener('statechange', () => {
-          switch (newWorker.state) {
-            case 'installed':
-              if (navigator.serviceWorker.controller) {
-                // New content is available
-                const updateConfirm = window.confirm(
-                  'New content is available! Would you like to refresh to see the updates?'
-                )
-                if (updateConfirm) window.location.reload()
-              }
-              break
-            case 'redundant':
-              console.log('The installing service worker became redundant')
-              break
-          }
-        })
+
+      console.info('ServiceWorker registration successful', {
+        scope: registration.scope,
+        active: !!registration.active,
+        installing: !!registration.installing,
+        waiting: !!registration.waiting
       })
 
-      // Check for updates every hour
-      setInterval(() => {
-        registration.update()
-      }, 60 * 60 * 1000)
+      // Set up update handling
+      handleServiceWorkerUpdate(registration)
 
-      console.log('ServiceWorker registration successful')
+      // Check for updates every hour
+      setInterval(() => registration.update(), 60 * 60 * 1000)
+
     } catch (error) {
-      console.error('ServiceWorker registration failed:', error)
+      // Log detailed error information
+      const errorDetails = {
+        name: error.name,
+        message: error.message,
+        fileName: error.fileName,
+        lineNumber: error.lineNumber,
+        stack: error.stack
+      }
+
+      console.error('ServiceWorker registration failed:', errorDetails)
+
+      if (typeof window.reportError === 'function') {
+        window.reportError('ServiceWorker registration failed', error)
+      }
+
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('PWA functionality will not be available - Service Worker failed to register')
+      }
     }
   })
 })
