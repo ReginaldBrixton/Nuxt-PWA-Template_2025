@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
+  <main>
     <div class="fixed top-4 right-4 z-50">
       <ThemeToggle />
     </div>
@@ -8,7 +8,7 @@
       <PwaPrompt />
       <NuxtPage />
     </NuxtLayout>
-  </div>
+  </main>
 </template>
 
 <script setup>
