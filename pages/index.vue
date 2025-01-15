@@ -24,9 +24,7 @@ const installStatus = computed(() => {
 })
 
 const handleInstall = () => {
-  if ($pwa?.showInstallPrompt) {
-    $pwa.install()
-  }
+  $pwa?.showInstallPrompt && $pwa.install()
 }
 </script>
 
