@@ -14,20 +14,22 @@
 <script setup>
 import { onMounted } from 'vue'
 
-// Initialize theme class on body
-onMounted(() => {
-  // Add min-height to prevent layout shift
+const initializeMinHeight = () => {
   document.body.style.minHeight = '100vh'
-  
-  // Set initial color scheme meta tag
+}
+
+const updateThemeColor = () => {
   const metaThemeColor = document.querySelector('meta[name="theme-color"]')
-  if (metaThemeColor) {
-    if (document.documentElement.classList.contains('dark')) {
-      metaThemeColor.setAttribute('content', '#111827') // dark mode background
-    } else {
-      metaThemeColor.setAttribute('content', '#ffffff') // light mode background
-    }
-  }
+  if (!metaThemeColor) return
+  
+  const isDarkMode = document.documentElement.classList.contains('dark')
+  const themeColor = isDarkMode ? '#111827' : '#ffffff'
+  metaThemeColor.setAttribute('content', themeColor)
+}
+
+onMounted(() => {
+  initializeMinHeight()
+  updateThemeColor()
 })
 </script>
 
