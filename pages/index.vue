@@ -1,6 +1,4 @@
-<script setup>
-const { $pwa } = useNuxtApp()
-
+<script setup lang="ts">
 const features = [
   {
     title: 'Offline Support',
@@ -8,24 +6,16 @@ const features = [
     icon: 'M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z'
   },
   {
-    title: 'Easy Installation',
-    description: 'Install this app on your device for quick access and native-like experience',
-    icon: 'M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4'
-  },
-  {
     title: 'Modern UI',
     description: 'Beautiful and responsive design with dark mode support',
     icon: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'
+  },
+  {
+    title: 'Fast Performance',
+    description: 'Optimized for speed and efficiency across all devices',
+    icon: 'M13 10V3L4 14h7v7l9-11h-7z'
   }
 ]
-
-const installStatus = computed(() => {
-  return $pwa?.showInstallPrompt ? 'Install Now' : 'Already Installed'
-})
-
-const handleInstall = () => {
-  $pwa?.showInstallPrompt && $pwa.install()
-}
 </script>
 <template>
   <div class="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
@@ -40,19 +30,8 @@ const handleInstall = () => {
                 <span class="block text-emerald-600 dark:text-emerald-500">Nuxt PWA Template</span>
               </h1>
               <p class="mt-3 max-w-md mx-auto text-base text-gray-500 dark:text-gray-400 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-                A modern Progressive Web App template built with Nuxt 3, featuring offline support, easy installation, and a beautiful responsive design.
+                A modern Progressive Web App template built with Nuxt 3, featuring offline support and a beautiful responsive design.
               </p>
-              <div class="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
-                <div class="rounded-md shadow">
-                  <button
-                    @click="handleInstall"
-                    class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 md:py-4 md:text-lg md:px-10"
-                    :class="{ 'opacity-50 cursor-not-allowed': !$pwa?.showInstallPrompt }"
-                  >
-                    {{ installStatus }}
-                  </button>
-                </div>
-              </div>
             </div>
           </div>
         </div>
