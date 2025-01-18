@@ -1,58 +1,60 @@
-const CACHE_NAME = 'nuxt-pwa-cache-v1';
-const OFFLINE_URL = '/offline.html';
+// Service worker source
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING')
+    self.skipWaiting()
+})
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(
+// Inject manifest here
+self.__WB_MANIFEST
+
+const CACHE_NAME = 'my-pwa-cache-v1'
+
+// Cache all the files to make a PWA
+self.addEventListener('install', (e) => {
+  e.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        return cache.add(new Request(OFFLINE_URL, { cache: 'reload' }));
+        // Our application only has two files here index.html and manifest.json
+        // but you can add more such as style.css as your app grows
+        return cache.addAll([
+          '/',
+          '/manifest.json'
+        ])
       })
-      .then(() => self.skipWaiting())
-  );
-});
+  )
+})
 
+// Our service worker will intercept all fetch requests
+// and check if we have cached the file
+// if so it will serve the cached file
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request)
+      .then((response) => {
+        // Cache hit - return response
+        if (response) {
+          return response
+        }
+        return fetch(event.request)
+      })
+      .catch(() => {
+        // If both fail, show a generic fallback:
+        return caches.match('/')
+      })
+  )
+})
+
+// Clear old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    Promise.all([
-      self.clients.claim(),
-      // Clean up old caches
-      caches.keys().then((keys) => {
-        return Promise.all(
-          keys.map((key) => {
-            if (key !== CACHE_NAME) {
-              return caches.delete(key);
-            }
-          })
-        );
-      })
-    ])
-  );
-});
-
-self.addEventListener('fetch', (event) => {
-  if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request)
-        .catch(() => {
-          return caches.match(OFFLINE_URL);
+    caches.keys().then((keyList) => {
+      return Promise.all(
+        keyList.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key)
+          }
         })
-    );
-  } else {
-    event.respondWith(
-      caches.match(event.request)
-        .then((response) => {
-          return response || fetch(event.request)
-            .then((response) => {
-              // Cache successful responses
-              if (response && response.status === 200) {
-                const responseClone = response.clone();
-                caches.open(CACHE_NAME).then((cache) => {
-                  cache.put(event.request, responseClone);
-                });
-              }
-              return response;
-            });
-        })
-    );
-  }
-}); 
+      )
+    })
+  )
+}) 
