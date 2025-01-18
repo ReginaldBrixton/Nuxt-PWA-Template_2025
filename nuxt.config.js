@@ -3,8 +3,29 @@ export default defineNuxtConfig({
   modules: [
     '@vite-pwa/nuxt',
     '@nuxtjs/tailwindcss',
-    '@vueuse/nuxt'
+    '@vueuse/nuxt',
+    '@nuxtjs/color-mode'
   ],
+
+  vue: {
+    config: {
+      silent: true,
+      productionTip: false,
+      compilerOptions: {
+        isCustomElement: (tag) => ['theme-toggle'].includes(tag)
+      }
+    }
+  },
+
+  components: {
+    dirs: ['~/components']
+  },
+
+  colorMode: {
+    classSuffix: '',
+    fallback: 'light',
+    storageKey: 'nuxt-color-mode'
+  },
 
   css: [
     '~/assets/css/transitions.css',
@@ -23,7 +44,8 @@ export default defineNuxtConfig({
 
   experimental: {
     inlineSSRStyles: false,
-    renderJsonPayloads: false
+    renderJsonPayloads: false,
+    payloadExtraction: false
   },
 
   app: {
@@ -37,11 +59,12 @@ export default defineNuxtConfig({
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
       ]
-    }
+    },
+    pageTransition: { name: 'page', mode: 'out-in' }
   },
 
   pwa: {
-    strategies: 'generateSW',
+    strategies: 'injectManifest',
     registerType: 'autoUpdate',
     manifest: {
       name: 'My PWA App',
@@ -50,6 +73,7 @@ export default defineNuxtConfig({
       theme_color: '#ffffff',
       background_color: '#ffffff',
       display: 'standalone',
+      orientation: 'portrait',
       scope: '/',
       start_url: '/',
       icons: [
@@ -73,29 +97,33 @@ export default defineNuxtConfig({
     },
     workbox: {
       navigateFallback: '/',
-      globDirectory: '.nuxt/dist/client',
-      globPatterns: [
-        '**/*.{js,css,html,png,svg,ico,json}'
-      ],
+      globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+      cleanupOutdatedCaches: true,
       runtimeCaching: [
         {
-          urlPattern: '/_nuxt/builds/**',
+          urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
           handler: 'CacheFirst',
           options: {
-            cacheName: 'nuxt-builds',
+            cacheName: 'google-fonts-cache',
             expiration: {
-              maxEntries: 200,
-              maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+              maxEntries: 10,
+              maxAgeSeconds: 60 * 60 * 24 * 365 // <== 365 days
+            },
+            cacheableResponse: {
+              statuses: [0, 200]
             }
           }
         }
       ]
     },
+    client: {
+      installPrompt: true,
+      periodicSyncForUpdates: 3600
+    },
     devOptions: {
       enabled: true,
-      type: 'module',
       suppressWarnings: true,
-      navigateFallback: '/'
+      type: 'module'
     }
   },
 
@@ -107,3 +135,4 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2025-01-07',
 })
+
