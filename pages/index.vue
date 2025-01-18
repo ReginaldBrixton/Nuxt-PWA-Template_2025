@@ -30,7 +30,7 @@ const features = [
                 <span class="block text-emerald-600 dark:text-emerald-500">Nuxt PWA Template</span>
               </h1>
               <p class="mt-3 max-w-md mx-auto text-base text-gray-500 dark:text-gray-400 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-                A modern Progressive Web App template built with Nuxt 3, featuring offline support and a beautiful responsive design.
+                Experience the future of web applications with our Nuxt 3 Progressive Web App template. Enjoy seamless offline support and a stunning, responsive design that adapts to any device.
               </p>
             </div>
           </div>
