@@ -64,9 +64,8 @@ export default defineNuxtConfig({
   },
 
   pwa: {
-    strategies: 'generateSW',
+    strategies: 'injectManifest',
     registerType: 'autoUpdate',
-    includeAssets: ['favicon.ico', 'icons/*'],
     manifest: {
       name: 'My PWA App',
       short_name: 'My PWA',
@@ -98,35 +97,24 @@ export default defineNuxtConfig({
     },
     workbox: {
       navigateFallback: '/',
-      globPatterns: [
-        '**/*.{js,css,html,png,svg,ico,json,woff2}'
-      ],
+      globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+      cleanupOutdatedCaches: true,
       runtimeCaching: [
         {
-          urlPattern: '/_nuxt/builds/**',
+          urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
           handler: 'CacheFirst',
           options: {
-            cacheName: 'nuxt-builds',
+            cacheName: 'google-fonts-cache',
             expiration: {
-              maxEntries: 200,
-              maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
-            }
-          }
-        },
-        {
-          urlPattern: '/',
-          handler: 'NetworkFirst',
-          options: {
-            cacheName: 'pages',
-            expiration: {
-              maxEntries: 50,
-              maxAgeSeconds: 24 * 60 * 60 // 24 hours
+              maxEntries: 10,
+              maxAgeSeconds: 60 * 60 * 24 * 365 // <== 365 days
+            },
+            cacheableResponse: {
+              statuses: [0, 200]
             }
           }
         }
-      ],
-      cleanupOutdatedCaches: true,
-      sourcemap: false
+      ]
     },
     client: {
       installPrompt: true,
@@ -134,10 +122,8 @@ export default defineNuxtConfig({
     },
     devOptions: {
       enabled: true,
-      type: 'module',
       suppressWarnings: true,
-      navigateFallback: '/',
-      disableDevLogs: false
+      type: 'module'
     }
   },
 
