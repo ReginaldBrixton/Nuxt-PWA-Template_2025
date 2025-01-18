@@ -3,8 +3,29 @@ export default defineNuxtConfig({
   modules: [
     '@vite-pwa/nuxt',
     '@nuxtjs/tailwindcss',
-    '@vueuse/nuxt'
+    '@vueuse/nuxt',
+    '@nuxtjs/color-mode'
   ],
+
+  vue: {
+    config: {
+      silent: true,
+      productionTip: false,
+      compilerOptions: {
+        isCustomElement: (tag) => ['theme-toggle'].includes(tag)
+      }
+    }
+  },
+
+  components: {
+    dirs: ['~/components']
+  },
+
+  colorMode: {
+    classSuffix: '',
+    fallback: 'light',
+    storageKey: 'nuxt-color-mode'
+  },
 
   css: [
     '~/assets/css/transitions.css',
@@ -23,7 +44,8 @@ export default defineNuxtConfig({
 
   experimental: {
     inlineSSRStyles: false,
-    renderJsonPayloads: false
+    renderJsonPayloads: false,
+    payloadExtraction: false
   },
 
   app: {
@@ -37,12 +59,14 @@ export default defineNuxtConfig({
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
       ]
-    }
+    },
+    pageTransition: { name: 'page', mode: 'out-in' }
   },
 
   pwa: {
     strategies: 'generateSW',
     registerType: 'autoUpdate',
+    includeAssets: ['favicon.ico', 'icons/*'],
     manifest: {
       name: 'My PWA App',
       short_name: 'My PWA',
@@ -50,6 +74,7 @@ export default defineNuxtConfig({
       theme_color: '#ffffff',
       background_color: '#ffffff',
       display: 'standalone',
+      orientation: 'portrait',
       scope: '/',
       start_url: '/',
       icons: [
@@ -73,9 +98,8 @@ export default defineNuxtConfig({
     },
     workbox: {
       navigateFallback: '/',
-      globDirectory: '.nuxt/dist/client',
       globPatterns: [
-        '**/*.{js,css,html,png,svg,ico,json}'
+        '**/*.{js,css,html,png,svg,ico,json,woff2}'
       ],
       runtimeCaching: [
         {
@@ -88,14 +112,32 @@ export default defineNuxtConfig({
               maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
             }
           }
+        },
+        {
+          urlPattern: '/',
+          handler: 'NetworkFirst',
+          options: {
+            cacheName: 'pages',
+            expiration: {
+              maxEntries: 50,
+              maxAgeSeconds: 24 * 60 * 60 // 24 hours
+            }
+          }
         }
-      ]
+      ],
+      cleanupOutdatedCaches: true,
+      sourcemap: false
+    },
+    client: {
+      installPrompt: true,
+      periodicSyncForUpdates: 3600
     },
     devOptions: {
       enabled: true,
       type: 'module',
       suppressWarnings: true,
-      navigateFallback: '/'
+      navigateFallback: '/',
+      disableDevLogs: false
     }
   },
 
