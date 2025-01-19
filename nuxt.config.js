@@ -8,11 +8,19 @@ export default defineNuxtConfig({
   ],
 
   vue: {
+    /**
+     * Vue configuration settings
+     * @type {Object}
+     * @property {boolean} silent - Suppress all Vue logs and warnings
+     * @property {boolean} productionTip - Prevents the production tip on Vue startup
+     * @property {Object} compilerOptions - Options for the template compiler
+     * @property {(tag: string) => boolean} compilerOptions.isCustomElement - Function to identify custom elements
+     */
     config: {
       silent: true,
       productionTip: false,
       compilerOptions: {
-        isCustomElement: (tag) => ['theme-toggle'].includes(tag)
+        isCustomElement: /** @type {(tag: string) => boolean} */ (tag) => ['theme-toggle'].includes(tag)
       }
     }
   },
@@ -24,11 +32,33 @@ export default defineNuxtConfig({
   colorMode: {
     classSuffix: '',
     fallback: 'light',
-    storageKey: 'nuxt-color-mode'
+    storageKey: 'nuxt-color-mode',
+    // Validate color mode options
+    validate(value) {
+      if (value === null || value === undefined) {
+        throw new Error('Color mode value is null or undefined')
+      }
+
+      if (typeof value !== 'string') {
+        throw new Error('Color mode value must be a string')
+      }
+
+      if (value !== 'light' && value !== 'dark') {
+        throw new Error('Color mode value must be either "light" or "dark"')
+      }
+
+      return true
+    }
   },
 
+  // Global CSS
+  // https://nuxt.com/docs/guide/assets#global-css
   css: [
+    // Transitions
+    // https://nuxt.com/docs/guide/assets#transitions
     '~/assets/css/transitions.css',
+    // Global styles
+    // https://nuxt.com/docs/guide/assets#global-styles
     '~/assets/css/main.css'
   ],
 
