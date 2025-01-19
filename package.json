@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "pnpm run generate-icons && nuxt build",
-    "clean-up": "node -e \"const { rmSync } = require('fs'); ['node_modules', '.nuxt', '.output', 'pnpm-lock.yaml'].forEach(dir => rmSync(dir, { recursive: true, force: true }))\"",
+    "clean-up": "node -e \"const { rmSync } = require('fs'); ['node_modules', '.nuxt', 'bun.lockb', '.output', 'pnpm-lock.yaml'].forEach(dir => rmSync(dir, { recursive: true, force: true }))\"",
     "dev": "nuxt cleanup && nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
