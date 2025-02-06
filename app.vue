@@ -1,7 +1,6 @@
 <template>
   <main>
     <div class="fixed top-4 right-4 z-50">
-      <ThemeToggle />
     </div>
     <NuxtLayout>
       <NuxtPwaAssets />
@@ -13,6 +12,7 @@
 
 <script setup>
 import { onMounted } from 'vue'
+import ThemeToggle from '~/components/ThemeToggle.vue'
 
 const initializeMinHeight = () => {
   document.body.style.minHeight = '100vh'
