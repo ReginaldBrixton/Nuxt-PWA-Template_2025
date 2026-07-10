@@ -20,6 +20,11 @@ useSeoMeta({
 })
 
 const returnHome = () => clearError({ redirect: '/' })
+const reloadPage = () => {
+  if (import.meta.client) {
+    window.location.reload()
+  }
+}
 </script>
 
 <template>
@@ -38,7 +43,7 @@ const returnHome = () => clearError({ redirect: '/' })
       <p class="mx-auto mt-5 max-w-md leading-7 text-slate-600 dark:text-slate-300">{{ description }}</p>
       <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
         <button type="button" class="rounded-xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600 dark:bg-white dark:text-slate-950 dark:hover:bg-emerald-400" @click="returnHome">Return home</button>
-        <button type="button" class="rounded-xl border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800" @click="window.location.reload()">Reload page</button>
+        <button type="button" class="rounded-xl border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800" @click="reloadPage">Reload page</button>
       </div>
     </main>
   </div>
