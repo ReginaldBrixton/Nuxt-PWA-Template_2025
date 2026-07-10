@@ -12,6 +12,10 @@ on:
       - Beta
       - Dev
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -39,3 +43,11 @@ jobs:
 
       - name: Build application
         run: pnpm build
+
+      - name: Verify PWA output
+        shell: bash
+        run: |
+          test -f .output/public/manifest.webmanifest
+          test -f .output/public/sw.js
+          test -f .output/public/offline.html
+          grep -q "offline.html" .output/public/sw.js
