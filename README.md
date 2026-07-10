@@ -1,75 +1,49 @@
-# Nuxt Minimal Starter
+# Nuxt 3 PWA Starter
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+A minimal Nuxt 3 starter with Tailwind CSS, dark mode, install prompts, offline caching, and service-worker update handling.
+
+## Requirements
+
+- Node.js 20 or later
+- pnpm 9 (the repository declares `pnpm@9.15.2`)
 
 ## Setup
 
-Make sure to install dependencies:
-
 ```bash
-# npm
-npm install
-
-# pnpm
+corepack enable
 pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
 pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
+
+The development server runs at `http://localhost:3000`.
 
 ## Production
 
-Build the application for production:
-
 ```bash
-# npm
-npm run build
-
-# pnpm
 pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
 pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+The build command generates the PWA icons before running the Nuxt production build. Icon-generation failures return a non-zero exit code so CI cannot report a false success.
+
+## PWA support
+
+PWA integration is provided by [`@vite-pwa/nuxt`](https://vite-pwa-org.netlify.app/frameworks/nuxt.html) using an injected service-worker manifest.
+
+- [`public/sw.js`](./public/sw.js) consumes the injected asset manifest, precaches the application shell, and provides navigation fallbacks.
+- [`composables/usePwa.js`](./composables/usePwa.js) tracks browser installation events.
+- [`components/PwaPrompt.vue`](./components/PwaPrompt.vue) exposes install and update prompts.
+- [`nuxt.config.js`](./nuxt.config.js) defines the web app manifest and PWA settings.
+
+## Available scripts
+
+- `pnpm dev` cleans Nuxt's generated state and starts the development server.
+- `pnpm build` generates icons and creates a production build.
+- `pnpm generate` creates a statically generated build.
+- `pnpm preview` previews the production build.
+- `pnpm generate-icons` regenerates the 64, 192, and 512 pixel PWA icons.
+- `pnpm clean-up` removes `node_modules`, `.nuxt`, and `.output`. It intentionally preserves package-manager lockfiles.
+
+## Deployment
+
+Review the [Nuxt deployment documentation](https://nuxt.com/docs/getting-started/deployment) for platform-specific instructions. Confirm after deployment that the web app manifest and generated service worker are served from the application origin.
