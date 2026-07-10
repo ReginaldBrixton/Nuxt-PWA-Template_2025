@@ -1,54 +1,40 @@
 export const usePwa = () => {
-  if (process.server) return {
-    install: () => {},
-    isInstallable: ref(false),
-    hasInstalled: ref(false)
-  }
-
-  const deferredPrompt = ref(null)
-  const isInstallable = ref(false)
-  const hasInstalled = ref(false)
+  const isInstallable = useState('pwa:is-installable', () => false)
+  const isInstalled = useState('pwa:is-installed', () => false)
+  const isOnline = useState('pwa:is-online', () => true)
+  const installError = useState('pwa:install-error', () => '')
 
   const install = async () => {
-    if (!deferredPrompt.value) return
-
-    try {
-      deferredPrompt.value.prompt()
-      const { outcome } = await deferredPrompt.value.userChoice
-
-      if (outcome === 'accepted') {
-        deferredPrompt.value = null
-        isInstallable.value = false
-        hasInstalled.value = true
-        localStorage.setItem('pwa-installed', 'true')
-      }
-    } catch (error) {
-      console.error('Installation failed:', error)
+    if (!import.meta.client) {
+      return false
     }
-  }
 
-  // Check if already installed
-  if (process.client) {
-    hasInstalled.value = localStorage.getItem('pwa-installed') === 'true'
-    
-    // Listen for installation event
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault()
-      deferredPrompt.value = e
-      isInstallable.value = true
-    })
+    const prompt = window.__NUXT_PWA_INSTALL_PROMPT__
+    if (!prompt) {
+      installError.value = 'Installation is not available in this browser yet.'
+      return false
+    }
 
-    // Listen for successful installation
-    window.addEventListener('appinstalled', () => {
-      hasInstalled.value = true
-      isInstallable.value = false
+    installError.value = ''
+    await prompt.prompt()
+    const choice = await prompt.userChoice
+
+    if (choice.outcome === 'accepted') {
+      window.__NUXT_PWA_INSTALL_PROMPT__ = null
       localStorage.setItem('pwa-installed', 'true')
-    })
+      isInstalled.value = true
+      isInstallable.value = false
+      return true
+    }
+
+    return false
   }
 
   return {
     install,
-    isInstallable: computed(() => isInstallable.value && !hasInstalled.value),
-    hasInstalled
+    installError,
+    isInstallable,
+    isInstalled,
+    isOnline
   }
 }

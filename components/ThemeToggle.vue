@@ -1,43 +1,64 @@
-<template>
-  <ClientOnly>
-    <button 
-      class="p-2 rounded-lg text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white bg-gray-100 dark:bg-gray-700 transition-colors"
-      @click="toggleColorMode"
-      aria-label="Toggle color mode"
-    >
-      <span class="sr-only">{{ colorMode.value === 'dark' ? 'Switch to light mode' : 'Switch to dark mode' }}</span>
-      <svg v-if="colorMode.value === 'dark'" class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-      </svg>
-      <svg v-else class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-      </svg>
-    </button>
-  </ClientOnly>
-</template>
-
 <script setup>
-import { onMounted, watch } from 'vue'
-import { useColorMode } from '#imports'
-
 const colorMode = useColorMode()
 
-// Update theme-color meta tag when color mode changes
-watch(() => colorMode.value, (newValue) => {
-  if (process.client) {
-    const metaThemeColor = document.querySelector('meta[name="theme-color"]')
-    metaThemeColor?.setAttribute('content', newValue === 'dark' ? '#111827' : '#ffffff')
-  }
-}, { immediate: true })
+const modeLabel = computed(() => {
+  if (colorMode.preference === 'system') return 'System theme'
+  return colorMode.preference === 'dark' ? 'Dark theme' : 'Light theme'
+})
 
-const toggleColorMode = () => {
-  colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
+const nextModeLabel = computed(() => {
+  if (colorMode.preference === 'system') return 'Switch to light theme'
+  if (colorMode.preference === 'light') return 'Switch to dark theme'
+  return 'Use system theme'
+})
+
+const cycleTheme = () => {
+  const nextPreference = {
+    system: 'light',
+    light: 'dark',
+    dark: 'system'
+  }
+
+  colorMode.preference = nextPreference[colorMode.preference] || 'system'
 }
 
-// Initialize color mode based on system preference if not already set
-onMounted(() => {
-  if (!colorMode.preference) {
-    colorMode.preference = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-  }
-})
+watch(
+  () => colorMode.value,
+  (mode) => {
+    if (!import.meta.client) return
+    document.querySelector('meta[name="theme-color"]')?.setAttribute(
+      'content',
+      mode === 'dark' ? '#020617' : '#ffffff'
+    )
+  },
+  { immediate: true }
+)
 </script>
+
+<template>
+  <ClientOnly>
+    <button
+      type="button"
+      class="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white/80 px-3 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:bg-slate-900 dark:focus-visible:ring-offset-slate-950"
+      :aria-label="nextModeLabel"
+      :title="nextModeLabel"
+      @click="cycleTheme"
+    >
+      <svg v-if="colorMode.preference === 'system'" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <rect x="3" y="4" width="18" height="13" rx="2" />
+        <path d="M8 21h8M12 17v4" stroke-linecap="round" />
+      </svg>
+      <svg v-else-if="colorMode.value === 'dark'" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      <svg v-else class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="12" cy="12" r="4" />
+        <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" stroke-linecap="round" />
+      </svg>
+      <span class="hidden sm:inline">{{ modeLabel }}</span>
+    </button>
+    <template #fallback>
+      <span class="block h-10 w-10 rounded-xl border border-slate-200 bg-white/80 dark:border-slate-700 dark:bg-slate-900/80" aria-hidden="true" />
+    </template>
+  </ClientOnly>
+</template>
