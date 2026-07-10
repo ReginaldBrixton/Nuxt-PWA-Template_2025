@@ -23,8 +23,5 @@ logs
 .env.*
 !.env.example
 
-
-# windsurf rules
+# Local editor/agent rules
 .windsurfrules
-
-pnpm-lock.yaml
