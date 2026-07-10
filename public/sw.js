@@ -1,60 +1,88 @@
-// Service worker source
+const PRECACHE_PREFIX = 'nuxt-pwa-precache'
+const PRECACHE_NAME = `${PRECACHE_PREFIX}-v2`
+const PRECACHE_ENTRIES = self.__WB_MANIFEST
+const PRECACHE_URLS = [
+  ...new Set([
+    '/',
+    ...PRECACHE_ENTRIES.map((entry) => typeof entry === 'string' ? entry : entry.url)
+  ])
+]
+
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING')
+  if (event.data?.type === 'SKIP_WAITING') {
     self.skipWaiting()
+  }
 })
 
-// Inject manifest here
-self.__WB_MANIFEST
-
-const CACHE_NAME = 'my-pwa-cache-v1'
-
-// Cache all the files to make a PWA
-self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        // Our application only has two files here index.html and manifest.json
-        // but you can add more such as style.css as your app grows
-        return cache.addAll([
-          '/',
-          '/manifest.json'
-        ])
-      })
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(PRECACHE_NAME)
+      .then((cache) => cache.addAll(PRECACHE_URLS))
+      .then(() => self.skipWaiting())
   )
 })
 
-// Our service worker will intercept all fetch requests
-// and check if we have cached the file
-// if so it will serve the cached file
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Cache hit - return response
-        if (response) {
-          return response
-        }
-        return fetch(event.request)
-      })
-      .catch(() => {
-        // If both fail, show a generic fallback:
-        return caches.match('/')
-      })
-  )
-})
-
-// Clear old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keyList) => {
-      return Promise.all(
-        keyList.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key)
-          }
-        })
-      )
-    })
+    caches.keys()
+      .then((cacheNames) => Promise.all(
+        cacheNames
+          .filter((cacheName) => (
+            (cacheName.startsWith(PRECACHE_PREFIX) && cacheName !== PRECACHE_NAME)
+            || cacheName === 'my-pwa-cache-v1'
+            || cacheName === 'nuxt-pwa-cache-v1'
+          ))
+          .map((cacheName) => caches.delete(cacheName))
+      ))
+      .then(() => self.clients.claim())
   )
-}) 
+})
+
+self.addEventListener('fetch', (event) => {
+  const { request } = event
+
+  if (request.method !== 'GET') {
+    return
+  }
+
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            const responseClone = response.clone()
+            caches.open(PRECACHE_NAME)
+              .then((cache) => cache.put(request, responseClone))
+          }
+
+          return response
+        })
+        .catch(async () => (
+          await caches.match(request)
+          || await caches.match('/')
+          || Response.error()
+        ))
+    )
+    return
+  }
+
+  event.respondWith(
+    caches.match(request)
+      .then(async (cachedResponse) => {
+        if (cachedResponse) {
+          return cachedResponse
+        }
+
+        const response = await fetch(request)
+        const requestUrl = new URL(request.url)
+
+        if (response.ok && requestUrl.origin === self.location.origin) {
+          const responseClone = response.clone()
+          caches.open(PRECACHE_NAME)
+            .then((cache) => cache.put(request, responseClone))
+        }
+
+        return response
+      })
+  )
+})
