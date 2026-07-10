@@ -37,7 +37,7 @@ const updateApp = async () => {
       <Transition name="notice">
         <div
           v-if="!isOnline"
-          class="fixed inset-x-0 top-20 z-50 mx-auto flex w-[calc(100%-2rem)] max-w-xl items-center justify-center gap-2 rounded-2xl border border-amber-300/70 bg-amber-50/95 px-4 py-3 text-sm font-medium text-amber-950 shadow-lg backdrop-blur dark:border-amber-700/70 dark:bg-amber-950/95 dark:text-amber-100"
+          class="fixed left-4 right-4 top-20 z-50 mx-auto flex max-w-xl items-center justify-center gap-2 rounded-2xl border border-amber-300/70 bg-amber-50/95 px-4 py-3 text-sm font-medium text-amber-950 shadow-lg backdrop-blur dark:border-amber-700/70 dark:bg-amber-950/95 dark:text-amber-100"
           role="status"
         >
           <span class="h-2.5 w-2.5 rounded-full bg-amber-500" aria-hidden="true" />
